@@ -50,4 +50,5 @@ Jika ingin mengedit file `.env` Laravel dari dalam container:
     nano .env
     ```
 6. Setelah selesai, tekan `CTRL + X`, lalu `Y`, dan tekan `ENTER` untuk menyimpan.
+7. Jika ingin keluar dari `/var/www`, kalian ketik `exit`.
 
