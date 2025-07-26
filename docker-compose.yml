@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    image: laravel-app #ganti nama project kalian
+    container_name: laravel-app #ganti nama project kalian
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./app:/var/www
+    networks:
+      - laravel #ganti nama project kalian
+
+  web:
+    image: nginx:stable-alpine 
+    container_name: laravel-nginx #ganti nama project kalian
+    ports:
+      - "8001:80"
+    volumes:
+      - ./app:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - laravel #ganti nama project kalian
+
+  db:
+    image: mysql:8.0
+    container_name: laravel-db #ganti nama project kalian
+    ports:
+      - "3307:3306" #ganti port 3307 jika dibutuhkan
+    environment:
+      MYSQL_ROOT_PASSWORD: secret #ganti password sama
+      MYSQL_DATABASE: laravel #ganti nama project kalian
+
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - laravel #ganti nama project kalian
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: laravel-phpmyadmin #ganti nama project kalian
+    restart: unless-stopped
+    ports:
+      - "8080:80" #ganti port 8080 jika dibutuhkan
+    environment:
+      PMA_HOST: db #ganti nama host ketika project kalian masuk ke docker (misal: ganti DB_HOST di .env laravel "localhost" menjadi "db")
+      MYSQL_ROOT_PASSWORD: secret #ganti password sama
+    depends_on:
+      - db
+    networks:
+      - laravel #ganti nama project kalian
+
+volumes:
+  dbdata:
+
+networks:
+  laravel: #ganti nama project kalian
+    driver: bridge
